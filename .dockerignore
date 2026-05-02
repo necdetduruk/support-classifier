@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.github/
+notebooks/
+data/
+models/banking77-distilbert/checkpoints/
+*.log
+.DS_Store
+.pytest_cache/
+.idea/
+.vscode/
