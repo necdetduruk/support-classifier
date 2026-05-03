@@ -37,6 +37,8 @@ jobs:
           IMAGE_URI="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}"
           gcloud builds submit \
             --tag="${IMAGE_URI}" \
+            --region="${{ env.REGION }}" \
+            --default-buckets-behavior=regional-user-owned-bucket \
             --project="${{ secrets.GCP_PROJECT_ID }}"
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
 
