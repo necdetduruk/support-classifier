@@ -1,8 +1,14 @@
 steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud storage cp -r ${_MODEL_GCS_PATH} models/banking77-distilbert
+
   - name: gcr.io/cloud-builders/docker
     args:
       - build
-      - --build-arg=MODEL_GCS_PATH=${_MODEL_GCS_PATH}
       - --tag=${_IMAGE_URI}
       - .
 
