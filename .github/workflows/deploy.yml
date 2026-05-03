@@ -37,10 +37,9 @@ jobs:
           IMAGE_URI="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}"
           MODEL_GCS_PATH="gs://${{ secrets.GCP_PROJECT_ID }}-models/banking77-distilbert"
           gcloud builds submit \
-            --tag="${IMAGE_URI}" \
+            --config=cloudbuild.yaml \
+            --substitutions="_IMAGE_URI=${IMAGE_URI},_MODEL_GCS_PATH=${MODEL_GCS_PATH}" \
             --region="${{ env.REGION }}" \
-            --default-buckets-behavior=regional-user-owned-bucket \
-            --substitutions="_MODEL_GCS_PATH=${MODEL_GCS_PATH}" \
             --project="${{ secrets.GCP_PROJECT_ID }}"
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
 
