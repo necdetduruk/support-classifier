@@ -4,7 +4,8 @@ steps:
     args:
       - -c
       - |
-        gcloud storage cp -r ${_MODEL_GCS_PATH} models/banking77-distilbert
+        mkdir -p models/banking77-distilbert
+        gcloud storage cp -r ${_MODEL_GCS_PATH}/* models/banking77-distilbert/
 
   - name: gcr.io/cloud-builders/docker
     args:
