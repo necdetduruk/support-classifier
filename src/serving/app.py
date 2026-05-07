@@ -13,23 +13,22 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # --- Config ---
 MODEL_DIR = Path(os.getenv("MODEL_DIR", "models/banking77-distilbert"))
+MODEL_VERSION = "banking77-distilbert-v1"
 MAX_LENGTH = 64
 TOP_K_DEFAULT = 3
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    format="%(message)s",
 )
 logger = logging.getLogger("serving")
 
-# Loaded at startup, populated in lifespan
 state = {}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load model once at startup."""
-    logger.info(f"Loading model from {MODEL_DIR}")
+    logger.info(json.dumps({"event": "startup", "model_dir": str(MODEL_DIR)}))
     if not MODEL_DIR.exists():
         raise RuntimeError(f"Model directory not found: {MODEL_DIR}")
 
@@ -47,7 +46,11 @@ async def lifespan(app: FastAPI):
     state["model"] = model
     state["label_names"] = label_names
     state["metrics"] = metrics
-    logger.info(f"Model loaded. {len(label_names)} labels. Metrics: {metrics}")
+    logger.info(json.dumps({
+        "event": "model_loaded",
+        "num_labels": len(label_names),
+        "model_version": MODEL_VERSION,
+    }))
     yield
     state.clear()
 
@@ -59,7 +62,6 @@ app = FastAPI(
 )
 
 
-# --- Schemas ---
 class PredictRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=512)
     top_k: int = Field(default=TOP_K_DEFAULT, ge=1, le=10)
@@ -73,10 +75,9 @@ class Prediction(BaseModel):
 class PredictResponse(BaseModel):
     text: str
     predictions: List[Prediction]
-    model_version: str = "banking77-distilbert-v1"
+    model_version: str = MODEL_VERSION
 
 
-# --- Routes ---
 @app.get("/health")
 def health():
     return {"status": "ok", "model_loaded": "model" in state}
@@ -85,7 +86,7 @@ def health():
 @app.get("/info")
 def info():
     return {
-        "model_version": "banking77-distilbert-v1",
+        "model_version": MODEL_VERSION,
         "num_labels": len(state.get("label_names", [])),
         "metrics": state.get("metrics", {}),
     }
@@ -119,9 +120,13 @@ def predict(req: PredictRequest):
         for p, i in zip(top_probs, top_idx)
     ]
 
-    logger.info(
-        f"prediction text_len={len(req.text)} top1={predictions[0].label} "
-        f"top1_score={predictions[0].score:.4f}"
-    )
+    logger.info(json.dumps({
+        "event": "prediction",
+        "text_len": len(req.text),
+        "text_truncated": req.text[:100],
+        "top1_label": predictions[0].label,
+        "top1_score": float(predictions[0].score),
+        "model_version": MODEL_VERSION,
+    }))
 
     return PredictResponse(text=req.text, predictions=predictions)
