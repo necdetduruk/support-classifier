@@ -1,5 +1,7 @@
 # Support Ticket Intent Classifier
 
+![Build and Deploy](https://github.com/necdetduruk/support-classifier/actions/workflows/deploy.yml/badge.svg)
+
 Production-grade MLOps pipeline: a fine-tuned DistilBERT model classifying customer support text into 77 banking intents, deployed to Google Cloud Run via fully-automated CI/CD with monitoring and drift detection.
 
 **Live endpoint:** [https://support-classifier-weguu3yhnq-uc.a.run.app](https://support-classifier-weguu3yhnq-uc.a.run.app/docs)
