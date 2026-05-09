@@ -129,6 +129,9 @@ A 5.5x separation. The alert threshold of 0.20 sits in the gap, only firing when
 
 *Caveat: these means are from synthetic queries close to canonical banking77 phrasings. Real production calibration would tune the threshold against actual traffic distribution.*
 
+![Drift signal in production](docs/drift-signal.png)
+*Cloud Monitoring chart: in-distribution traffic (left) averages around 0.4–0.5 confidence; OOD traffic (right) collapses to under 0.1. The 0.20 alert threshold sits in the gap.*
+
 ## Repository layout
 
 ```
