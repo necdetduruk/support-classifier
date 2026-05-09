@@ -187,4 +187,7 @@ Each of these is the kind of thing you only learn by shipping.
 
 ---
 
-Built as a focused weekend MLOps portfolio project.
+---
+
+Built by [Necdet Duruk](https://github.com/necdetduruk) as a focused week long  MLOps portfolio project.
+Connect on [LinkedIn](https://www.linkedin.com/in/necdetduruk/) or open an issue with questions.
